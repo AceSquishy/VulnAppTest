@@ -1,4 +1,6 @@
 name: "Release Pipeline"
+permissions:
+  contents: read
 on:
   push:
     tags:
@@ -8,6 +10,8 @@ jobs:
     if: github.repository == 'WebGoat/WebGoat'
     name: Release WebGoat
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     environment:
       name: release
     steps:
