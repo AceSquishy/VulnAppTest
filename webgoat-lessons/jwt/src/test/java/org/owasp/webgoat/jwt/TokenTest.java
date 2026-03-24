@@ -50,13 +50,13 @@ public class TokenTest {
                 .setClaims(claims)
                 .signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, key).compact();
         log.debug(token);
-        Jwt jwt = Jwts.parser().setSigningKey("qwertyqwerty1234").parse(token);
+        io.jsonwebtoken.Jws<Claims> jwt = Jwts.parser().setSigningKey("qwertyqwerty1234").parseClaimsJws(token);
         jwt = Jwts.parser().setSigningKeyResolver(new SigningKeyResolverAdapter() {
             @Override
             public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
                 return TextCodec.BASE64.decode(key);
             }
-        }).parse(token);
+        }).parseClaimsJws(token);
 
     }
 
