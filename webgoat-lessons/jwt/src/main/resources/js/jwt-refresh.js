@@ -34,9 +34,9 @@ function newToken() {
         url: 'JWT/refresh/newToken',
         data: JSON.stringify({refreshToken: localStorage.getItem('refresh_token')})
     }).success(
-        function () {
-            localStorage.setItem('access_token', apiToken);
-            localStorage.setItem('refresh_token', refreshToken);
+        function (response) {
+            localStorage.setItem('access_token', response['access_token']);
+            localStorage.setItem('refresh_token', response['refresh_token']);
         }
     )
 }
