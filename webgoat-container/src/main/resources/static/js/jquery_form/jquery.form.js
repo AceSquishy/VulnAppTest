@@ -373,7 +373,43 @@ $.fn.ajaxSubmit = function(options) {
         s.context = s.context || s;
         id = 'jqFormIO' + (new Date().getTime());
         if (s.iframeTarget) {
-            $io = $(s.iframeTarget);
+        var iframeTarget = s.iframeTarget;
+        // Normalize iframeTarget to avoid interpreting untrusted HTML as DOM
+        if (iframeTarget.jquery || iframeTarget.nodeType) {
+            // jQuery object or DOM node provided explicitly
+            $io = $(iframeTarget);
+        } else if (typeof iframeTarget === 'string') {
+            // Treat as a selector string only; reject HTML-like strings
+            var trimmed = $.trim(iframeTarget);
+            if (/^</.test(trimmed)) {
+                // Looks like HTML; ignore and fall back to auto-created iframe
+                $io = null;
+            } else {
+                var targetEl = null;
+                if (trimmed.charAt(0) === '#') {
+                    // Simple ID selector: '#id'
+                    targetEl = document.getElementById(trimmed.substring(1));
+                }
+                if (!targetEl && document.querySelector) {
+                    // Fallback to querySelector for other selector strings
+                    try {
+                        targetEl = document.querySelector(trimmed);
+                    } catch (e) {
+                        targetEl = null;
+                    }
+                }
+                if (targetEl) {
+                    $io = $(targetEl);
+                } else {
+                    // Selector did not resolve; fall back to auto-created iframe
+                    $io = null;
+                }
+            }
+        } else {
+            // Unsupported type; fall back to auto-created iframe
+            $io = null;
+        }
+        if ($io) {
             n = $io.attr2('name');
             if (!n) {
                 $io.attr2('name', id);
@@ -381,6 +417,7 @@ $.fn.ajaxSubmit = function(options) {
             else {
                 id = n;
             }
+        }
         }
         else {
             $io = $('<iframe name="' + id + '" src="'+ s.iframeSrc +'" />');
