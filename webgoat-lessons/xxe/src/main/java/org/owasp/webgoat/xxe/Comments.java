@@ -92,12 +92,35 @@ public class Comments {
     protected Comment parseXml(String xml) throws JAXBException, XMLStreamException {
         var jc = JAXBContext.newInstance(Comment.class);
         var xif = XMLInputFactory.newInstance();
-        
-        if (webSession.isSecurityEnabled()) {
-        	xif.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-        	xif.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");  // compliant
+
+        // Harden XML parser against XXE: disallow external DTDs/schemas, disable DTDs and external entities.
+        try {
+            xif.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        } catch (IllegalArgumentException ignored) {
+            // Property not supported by this XMLInputFactory implementation
         }
-        
+        try {
+            xif.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        } catch (IllegalArgumentException ignored) {
+            // Property not supported by this XMLInputFactory implementation
+        }
+        try {
+            xif.setProperty(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (IllegalArgumentException ignored) {
+            // Property not supported by this XMLInputFactory implementation
+        }
+        try {
+            // Common StAX properties to disable DTDs and external entities
+            xif.setProperty("javax.xml.stream.supportDTD", false);
+        } catch (IllegalArgumentException ignored) {
+            // Property not supported by this XMLInputFactory implementation
+        }
+        try {
+            xif.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+        } catch (IllegalArgumentException ignored) {
+            // Property not supported by this XMLInputFactory implementation
+        }
+
         var xsr = xif.createXMLStreamReader(new StringReader(xml));
 
         var unmarshaller = jc.createUnmarshaller();
