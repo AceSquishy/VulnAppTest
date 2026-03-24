@@ -10,3 +10,16 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "feature/dependabot"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "feature/dependabot"
+
+      # Docker updates
+  - package-ecosystem: "docker"
+    directory: "/docker/"
+    schedule:
+      interval: "daily"
+    target-branch: "feature/dependabot"
