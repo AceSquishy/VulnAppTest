@@ -7,8 +7,8 @@ version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/" # Location of package manifests
-    schedule:
-      interval: "daily"
+    #schedule:
+    #  interval: "daily"
     target-branch: "feature/dependabot"
 
   - package-ecosystem: "github-actions"
